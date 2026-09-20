@@ -3,10 +3,8 @@ import { useSessionStore } from '@/stores/session'
 import AuthLayout from '@/layouts/AuthLayout.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import LoginView from '@/views/LoginView.vue'
-import PlaceholderView from '@/views/PlaceholderView.vue'
+import { rutasDelPortal } from './portalRoutes'
 
-// Cada ruta de pantalla real agrega meta.roles (quién la ve en el menú y
-// quién puede entrar) y, si aparece en el menú lateral, meta.menu.titulo.
 const routes = [
   {
     path: '/login',
@@ -17,8 +15,7 @@ const routes = [
   {
     path: '/',
     component: AppLayout,
-    children: [{ path: '', component: PlaceholderView }],
-    meta: { roles: ['Administrador', 'Docente', 'Control escolar'] }
+    children: rutasDelPortal
   }
 ]
 
@@ -31,6 +28,9 @@ router.beforeEach((to) => {
   const session = useSessionStore()
   if (!to.meta.publica && !session.estaAutenticado) {
     return '/login'
+  }
+  if (to.meta.roles && !to.meta.roles.includes(session.rol)) {
+    return '/'
   }
   return true
 })

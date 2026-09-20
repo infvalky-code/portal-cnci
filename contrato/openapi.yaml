@@ -35,6 +35,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /periodos:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarPeriodos
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: estatus
+          in: query
+          schema: { type: string, enum: [Abierto, Cerrado] }
+        - name: texto
+          in: query
+          description: Búsqueda por nombre del periodo
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de periodos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PeriodoPagina'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un
+        periodo (tetramestre).
+      operationId: crearPeriodo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PeriodoRequest'
+      responses:
+        '201':
+          description: Periodo creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Periodo'
+        '409':
+          description: Conflicto (duplicado o regla incumplida) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /periodos/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja el
+        periodo (activo = false). No existe eliminación física.
+      operationId: darDeBajaPeriodo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Periodo dado de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Periodo'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -66,3 +148,48 @@ components:
       properties:
         mensaje:
           type: string
+    Periodo:
+      type: object
+      required: [id, nombre, fechaInicio, fechaFin, estatus, activo]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+        estatus:
+          type: string
+          enum: [Abierto, Cerrado]
+        activo:
+          type: boolean
+    PeriodoRequest:
+      type: object
+      required: [nombre, fechaInicio, fechaFin]
+      properties:
+        nombre:
+          type: string
+        fechaInicio:
+          type: string
+          format: date
+        fechaFin:
+          type: string
+          format: date
+    PeriodoPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Periodo'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer

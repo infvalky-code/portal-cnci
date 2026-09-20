@@ -2,18 +2,19 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSessionStore } from '@/stores/session'
+import { rutasDelPortal } from '@/router/portalRoutes'
 
 const session = useSessionStore()
 const router = useRouter()
 
-// Cada ruta de pantalla declara meta.menu = { titulo, icono } y meta.roles.
+// Cada ruta de pantalla declara meta.menu = { titulo } y meta.roles.
 // El menú se arma solo con lo que el rol de la sesión puede ver.
 const opcionesMenu = computed(() =>
-  router.options.routes
+  rutasDelPortal
     .filter((ruta) => ruta.meta?.menu && ruta.meta?.roles?.includes(session.rol))
     .map((ruta) => ({
       titulo: ruta.meta.menu.titulo,
-      ruta: ruta.path
+      ruta: `/${ruta.path}`
     }))
 )
 
