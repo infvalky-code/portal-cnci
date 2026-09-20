@@ -1,0 +1,648 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Plan de Programación (Copy)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@500;600;700&family=Roboto+Mono:wght@400;500&family=Roboto:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+<style>
+  /* Paleta de los lineamientos visuales del portal */
+  :root {
+    --ground: #f5f5f5;
+    --surface: #ffffff;
+    --ink: #333333;
+    --muted: #616161;
+    --line: #dedede;
+    --primary: #1565c0;
+    --primary-soft: #e3eefa;
+    --success: #2e7d32;
+    --success-soft: #e5f2e6;
+    --error: #c62828;
+    --error-soft: #fbe6e6;
+    --warning: #b8860b;
+    --warning-soft: #f8efd9;
+    --neutral-soft: #ececec;
+    --code-bg: #efefef;
+    --font-body: "Roboto", "Segoe UI", system-ui, sans-serif;
+    --font-head: "Roboto Condensed", "Arial Narrow", "Segoe UI", sans-serif;
+    --font-mono: "Roboto Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #121416;
+      --surface: #1c1f23;
+      --ink: #e4e6e8;
+      --muted: #a2a8ae;
+      --line: #30353b;
+      --primary: #6aa7ec;
+      --primary-soft: #19304b;
+      --success: #74c27b;
+      --success-soft: #1d3320;
+      --error: #f08077;
+      --error-soft: #3d1f1d;
+      --warning: #dcae45;
+      --warning-soft: #3a2f14;
+      --neutral-soft: #262a2f;
+      --code-bg: #262a2f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #121416;
+    --surface: #1c1f23;
+    --ink: #e4e6e8;
+    --muted: #a2a8ae;
+    --line: #30353b;
+    --primary: #6aa7ec;
+    --primary-soft: #19304b;
+    --success: #74c27b;
+    --success-soft: #1d3320;
+    --error: #f08077;
+    --error-soft: #3d1f1d;
+    --warning: #dcae45;
+    --warning-soft: #3a2f14;
+    --neutral-soft: #262a2f;
+    --code-bg: #262a2f;
+  }
+
+  body { background: var(--ground); color: var(--ink); font-family: var(--font-body); font-size: 15.5px; line-height: 1.6; }
+  .page { max-width: 980px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 64px; display: grid; gap: 46px; }
+  h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; }
+  h2 { font-size: 26px; font-weight: 600; }
+  h3 { font-size: 18.5px; font-weight: 600; }
+  p { margin: 0; max-width: 70ch; }
+  ul, ol { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+  code { font-family: var(--font-mono); font-size: 0.85em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  a { color: var(--primary); }
+  b { font-weight: 700; }
+
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary); }
+  section { display: grid; gap: 16px; }
+  .lead { font-size: 17px; color: var(--muted); max-width: 72ch; }
+  .note { font-size: 14px; color: var(--muted); }
+
+  header.top { display: grid; gap: 14px; border-bottom: 3px solid var(--primary); padding-bottom: 22px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13.5px; color: var(--muted); }
+  .meta b { color: var(--ink); }
+  .change { background: var(--warning-soft); border: 1px solid var(--warning); border-radius: 8px; padding: 12px 16px; display: grid; gap: 4px; font-size: 14.5px; }
+  .change b { color: var(--warning); font-family: var(--font-head); font-size: 16px; }
+
+  .chip { display: inline-block; font-family: var(--font-mono); font-size: 11.5px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .chip.done { background: var(--success-soft); color: var(--success); }
+  .chip.adapt { background: var(--primary-soft); color: var(--primary); }
+  .chip.todo { background: var(--warning-soft); color: var(--warning); }
+  .chip.risk { background: var(--error-soft); color: var(--error); }
+  .chip.off { background: var(--neutral-soft); color: var(--muted); }
+
+  /* Flujo del sistema: es una secuencia real, por eso va numerado */
+  .flow { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; counter-reset: step; }
+  .flow li { counter-increment: step; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .flow li::before { content: counter(step); font-family: var(--font-mono); font-size: 13px; color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; }
+  .flow .who { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .flow b { font-family: var(--font-head); font-size: 17px; line-height: 1.2; }
+  .flow p { font-size: 14px; color: var(--muted); }
+  .flow li.key { border-color: var(--primary); background: var(--primary-soft); }
+  .flow li.key p { color: var(--ink); }
+
+  .grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .card .k { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .card .v { font-family: var(--font-head); font-size: 19px; font-weight: 600; }
+  .card p { font-size: 14px; color: var(--muted); }
+  .card .src { font-size: 12.5px; color: var(--muted); font-style: italic; }
+
+  .diagram { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; display: grid; gap: 10px; }
+  .diagram svg { display: block; min-width: 760px; width: 100%; height: auto; }
+  .diagram text { font-family: var(--font-body); }
+  .n-web { fill: var(--success-soft); stroke: var(--success); stroke-width: 1.5; }
+  .n-api { fill: var(--primary-soft); stroke: var(--primary); stroke-width: 2; }
+  .n-dev { fill: var(--warning-soft); stroke: var(--warning); stroke-width: 1.5; }
+  .n-db { fill: var(--neutral-soft); stroke: var(--muted); stroke-width: 1.5; }
+  .n-future { fill: var(--surface); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 6 5; }
+  .edge { stroke: var(--muted); stroke-width: 1.5; fill: none; }
+  .edge-future { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 5; }
+  .arrowhead { fill: var(--muted); }
+  .t-ink { fill: var(--ink); }
+  .t-muted { fill: var(--muted); }
+  .t-primary { fill: var(--primary); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); padding-inline: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+
+  .layers { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+  .layer { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; gap: 2px; flex: 1 1 150px; }
+  .layer b { font-family: var(--font-head); font-size: 16px; }
+  .layer span { font-size: 13px; color: var(--muted); }
+  .layer.hl { border-color: var(--primary); background: var(--primary-soft); }
+  .layer-arrow { align-self: center; color: var(--muted); font-size: 18px; }
+
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .three { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+  .panel ul { font-size: 14.5px; }
+  .panel.avoid { border-top: 4px solid var(--error); }
+  .panel.do { border-top: 4px solid var(--success); }
+  .panel.in { border-top: 4px solid var(--primary); }
+  .panel.out { border-top: 4px solid var(--muted); }
+  .panel.ask { border-top: 4px solid var(--warning); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { font-family: var(--font-head); font-weight: 600; font-size: 14.5px; background: var(--code-bg); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.date { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td.section-name { font-weight: 700; white-space: nowrap; }
+  tr.milestone td { background: var(--primary-soft); }
+  table.wide { min-width: 820px; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .swatch { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: grid; }
+  .swatch .color { height: 54px; }
+  .swatch .info { padding: 8px 10px; display: grid; gap: 1px; }
+  .swatch .info b { font-size: 14px; }
+  .swatch .info code { background: none; padding: 0; font-size: 12px; color: var(--muted); }
+  .swatch .info span { font-size: 12.5px; color: var(--muted); }
+
+  .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+  .person { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--primary); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+  .person .who { font-size: 13px; color: var(--muted); }
+  .person ul { font-size: 14.5px; }
+  .person .stack { font-family: var(--font-mono); font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; }
+
+  .rules { counter-reset: rule; display: grid; gap: 10px; padding: 0; list-style: none; }
+  .rules li { counter-increment: rule; display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; }
+  .rules li::before { content: counter(rule); font-family: var(--font-mono); font-size: 13px; color: var(--primary); border: 1px solid var(--primary); border-radius: 50%; width: 26px; height: 26px; display: grid; place-items: center; margin-top: 1px; }
+
+  .steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13.5px; }
+  .steps .s { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 4px 9px; }
+  .steps .arrow { color: var(--muted); }
+
+  footer { font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+
+  @media (max-width: 520px) {
+    body { font-size: 15px; }
+    .page { padding-inline: 16px; gap: 38px; }
+    .layer-arrow { display: none; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="top">
+    <span class="eyebrow">Equipo de Programación · Plan v2 · 18/09/2026</span>
+    <h1>Arquitectura y plan del Sistema de Control Escolar con huella</h1>
+    <p class="lead">Cómo funciona el sistema en la escuela, cómo encajan el reloj checador, el portal y la API con la base de datos del equipo de BD, quién hace qué y el calendario hasta la entrega.</p>
+    <div class="meta">
+      <span><b>Programación:</b> Brandon, Carlitos y Valky</span>
+      <span><b>Inicio:</b> 10/09/2026</span>
+      <span><b>Entrega final:</b> 24/11/2026</span>
+      <span><b>Presentaciones:</b> cada jueves</span>
+    </div>
+    <div class="change">
+      <b>Cambio del 18/09: el lector es solo para los docentes</b>
+      <span>El lector de huella funciona como reloj checador de los docentes. La asistencia de los alumnos, de bachillerato y de licenciatura, la toma el docente a mano en el portal. La disponibilidad de los docentes y el armado de horarios pasan a ser el núcleo del sistema.</span>
+    </div>
+  </header>
+
+  <section>
+    <span class="eyebrow">Funcionamiento</span>
+    <h2>Cómo funciona en la escuela</h2>
+    <p>Un tetramestre de principio a fin. Hoy la escuela arma los horarios con una carpeta enorme de hojas; el sistema lo hace más fácil sin quitarle la decisión a Coordinación.</p>
+    <ol class="flow">
+      <li><span class="who">Docente · celular</span><b>Disponibilidad</b><p>Al inicio de cada tetramestre llena el formulario: modalidades (bachillerato, licenciatura, sabatino…), días y horas en que puede.</p></li>
+      <li class="key"><span class="who">Coordinación</span><b>Armado de horarios</b><p>Tablero de grupos y horas. El sistema sugiere a los docentes disponibles y avisa empalmes; la decisión es de Coordinación. Al publicarlo, cada docente ve su horario.</p></li>
+      <li><span class="who">Docente · lector</span><b>Checada</b><p>Pone el dedo al llegar y al irse. El sistema lo compara con su horario: a tiempo, retardo o falta, y horas trabajadas.</p></li>
+      <li class="key"><span class="who">Docente · celular</span><b>Pase de lista</b><p>Abre su clase y marca presente, falta, retardo o justificada. Administra los alumnos de sus grupos.</p></li>
+      <li><span class="who">Coordinación</span><b>Salidas</b><p>Asistencia de docentes y alumnos, formatos oficiales (lista mensual, acta, boleta) y alertas de alumnos en riesgo.</p></li>
+    </ol>
+    <div class="panel ask">
+      <h3>Por confirmar con la escuela</h3>
+      <ul>
+        <li>¿El docente checa una vez al día (entrada y salida) o en cada clase? ¿Las horas sirven para pagarle o solo para control?</li>
+        <li>¿Cuántos lectores habrá y dónde (sala de maestros, entrada)?</li>
+        <li>¿El docente tiene que haber checado para poder pasar lista?</li>
+        <li>¿Quién da de alta a los alumnos en un grupo: el docente o Control escolar?</li>
+        <li>¿Calificaciones, acta y cierre de tetramestre siguen en el alcance? Por ahora se mantienen en el plan.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Decisiones</span>
+    <h2>Decisiones de arquitectura</h2>
+    <div class="grid-cards">
+      <div class="card"><span class="k">Principio</span><span class="v">Todo pasa por la API</span><p>Portal y reloj checador hablan solo con la API central; ningún cliente accede directo a la base.</p><span class="src">Planeación del portal</span></div>
+      <div class="card"><span class="k">Backend</span><span class="v">Java 21 · Spring Boot</span><p>Capas controller, service y repository con DTOs; Spring Security, JWT y JPA.</p><span class="src">Planeación del portal</span></div>
+      <div class="card"><span class="k">Seguridad</span><span class="v">Dos autenticaciones</span><p>JWT para personas y clave (API key) para el reloj checador; nunca se mezclan. Permisos en el servidor con <code>@PreAuthorize</code>.</p><span class="src">Planeación del portal</span></div>
+      <div class="card"><span class="k">Dispositivo</span><span class="v">Reloj checador de docentes</span><p>App de escritorio JavaFX con el lector DigitalPersona U.are.U: enrola e identifica solo a docentes. No toma huella de alumnos.</p><span class="src">Funcionamiento del 18/09</span></div>
+      <div class="card"><span class="k">Alumnos</span><span class="v">Pase de lista del docente</span><p>La asistencia de todos los alumnos es manual, desde el portal: presente, falta, retardo o justificada.</p><span class="src">Funcionamiento del 18/09</span></div>
+      <div class="card"><span class="k">Horarios</span><span class="v">Armado asistido</span><p>La disponibilidad del docente alimenta un tablero con sugerencias; la base rechaza empalmes y decide Coordinación.</p><span class="src">Funcionamiento del 18/09</span></div>
+      <div class="card"><span class="k">Portal</span><span class="v">Vue 3 · Vuetify · celular</span><p>Vite, Pinia, Vue Router y Axios. Las pantallas del docente se diseñan para el celular; filtros antes de consultar.</p><span class="src">Planeación y lineamientos visuales</span></div>
+      <div class="card"><span class="k">Datos</span><span class="v">PostgreSQL del equipo de BD</span><p>Esquema <code>escolar</code> de 45 tablas con reglas, vistas y funciones. La API se adapta a él; lo que falte se propone como script.</p><span class="src">Entregables de base de datos</span></div>
+      <div class="card"><span class="k">Método</span><span class="v">Contrato primero</span><p>Cada endpoint se define en <code>contrato/openapi.yaml</code> antes de programarlo, para avanzar los tres en paralelo.</p><span class="src">Plan del líder</span></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Arquitectura</span>
+    <h2>Componentes y cómo se comunican</h2>
+    <div class="diagram" role="img" aria-label="Diagrama: el portal web, usado por Coordinación y por los docentes desde el celular, habla con la API por HTTPS con JWT; el reloj checador con el lector U.are.U habla con la API con su API key; la API se conecta por JDBC a PostgreSQL del equipo de BD. La app de consulta es una fase futura.">
+      <svg viewBox="0 0 960 470" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" class="arrowhead"/>
+          </marker>
+        </defs>
+
+        <!-- portal web -->
+        <rect x="20" y="24" width="270" height="132" rx="60" class="n-web"/>
+        <text x="155" y="60" text-anchor="middle" font-size="17" font-weight="700" class="t-ink">PORTAL WEB</text>
+        <text x="155" y="82" text-anchor="middle" font-size="13" class="t-muted">Vue 3 · Vuetify</text>
+        <text x="155" y="106" text-anchor="middle" font-size="13" class="t-ink">Coordinación: horarios, reportes</text>
+        <text x="155" y="124" text-anchor="middle" font-size="13" class="t-ink">Docente: pase de lista (celular)</text>
+
+        <!-- api -->
+        <circle cx="480" cy="210" r="132" class="n-api"/>
+        <text x="480" y="150" text-anchor="middle" font-size="18" font-weight="700" class="t-ink">API CENTRAL</text>
+        <text x="480" y="172" text-anchor="middle" font-size="13" class="t-muted">Java 21 · Spring Boot</text>
+        <text x="480" y="202" text-anchor="middle" font-size="13" class="t-ink">Controller · Service · Repository</text>
+        <text x="480" y="222" text-anchor="middle" font-size="13" class="t-ink">Disponibilidad y horarios</text>
+        <text x="480" y="242" text-anchor="middle" font-size="13" class="t-ink">Sesiones del día y pase de lista</text>
+        <text x="480" y="266" text-anchor="middle" font-size="13" class="t-primary">Checadas contra el horario</text>
+
+        <!-- base de datos -->
+        <rect x="712" y="154" width="228" height="112" rx="56" class="n-db"/>
+        <text x="826" y="194" text-anchor="middle" font-size="17" font-weight="700" class="t-ink">BASE DE DATOS</text>
+        <text x="826" y="216" text-anchor="middle" font-size="13" class="t-muted">PostgreSQL 16 · esquema escolar</text>
+        <text x="826" y="238" text-anchor="middle" font-size="13" class="t-ink">Equipo de BD</text>
+
+        <!-- reloj checador -->
+        <rect x="20" y="318" width="270" height="132" rx="60" class="n-dev"/>
+        <text x="155" y="354" text-anchor="middle" font-size="17" font-weight="700" class="t-ink">RELOJ CHECADOR</text>
+        <text x="155" y="376" text-anchor="middle" font-size="13" class="t-muted">App de escritorio JavaFX</text>
+        <text x="155" y="400" text-anchor="middle" font-size="13" class="t-ink">Lector U.are.U por USB:</text>
+        <text x="155" y="418" text-anchor="middle" font-size="13" class="t-ink">entrada y salida del docente</text>
+
+        <!-- app futura -->
+        <rect x="690" y="318" width="250" height="132" rx="60" class="n-future"/>
+        <text x="815" y="354" text-anchor="middle" font-size="17" font-weight="700" class="t-ink">APP DE CONSULTA</text>
+        <text x="815" y="376" text-anchor="middle" font-size="13" class="t-muted">Fase futura</text>
+        <text x="815" y="400" text-anchor="middle" font-size="13" class="t-ink">Consultas de asistencia para</text>
+        <text x="815" y="418" text-anchor="middle" font-size="13" class="t-ink">docentes y administración</text>
+
+        <!-- conexiones -->
+        <line x1="286" y1="112" x2="366" y2="148" class="edge" marker-end="url(#head)"/>
+        <text x="292" y="84" font-size="12.5" class="t-muted">HTTPS · JSON · JWT</text>
+
+        <line x1="262" y1="342" x2="378" y2="290" class="edge" marker-end="url(#head)"/>
+        <text x="226" y="300" font-size="12.5" class="t-muted">API key del lector</text>
+
+        <line x1="700" y1="342" x2="584" y2="290" class="edge-future" marker-end="url(#head)"/>
+        <text x="646" y="298" font-size="12.5" class="t-muted">JWT</text>
+
+        <line x1="614" y1="210" x2="706" y2="210" class="edge" marker-end="url(#head)"/>
+        <text x="660" y="198" text-anchor="middle" font-size="12.5" class="t-muted">JDBC</text>
+        <text x="662" y="232" text-anchor="middle" font-size="12.5" class="t-muted">cuenta</text>
+        <text x="662" y="247" text-anchor="middle" font-size="12.5" class="t-muted">aplicación</text>
+      </svg>
+      <div class="legend">
+        <span><i style="background: var(--success-soft); border: 1.5px solid var(--success)"></i>Portal: Valky</span>
+        <span><i style="background: var(--primary-soft); border: 1.5px solid var(--primary)"></i>API: Carlitos</span>
+        <span><i style="background: var(--warning-soft); border: 1.5px solid var(--warning)"></i>Reloj checador: Brandon</span>
+        <span><i style="background: var(--neutral-soft); border: 1.5px solid var(--muted)"></i>Otro equipo</span>
+        <span><i style="background: var(--surface); border: 1.5px dashed var(--muted)"></i>Fase futura</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Backend</span>
+    <h2>Capas de la API y seguridad</h2>
+    <div class="layers" aria-label="Recorrido de una petición por las capas de la API">
+      <div class="layer"><b>Petición HTTP</b><span>Portal o reloj checador</span></div>
+      <span class="layer-arrow">→</span>
+      <div class="layer hl"><b>Controller</b><span>Solo conoce DTOs, nunca entidades</span></div>
+      <span class="layer-arrow">→</span>
+      <div class="layer hl"><b>Service</b><span>Reglas de negocio y permisos del caso</span></div>
+      <span class="layer-arrow">→</span>
+      <div class="layer hl"><b>Repository</b><span>Spring Data JPA, única capa con la base</span></div>
+      <span class="layer-arrow">→</span>
+      <div class="layer"><b>PostgreSQL</b><span>Valida otra vez: tiene la última palabra</span></div>
+    </div>
+    <div class="two">
+      <div class="panel">
+        <h3>JWT para personas</h3>
+        <ul>
+          <li>Inicio de sesión con usuario y contraseña cifrada con BCrypt, sobre las tablas <code>usuario</code>, <code>rol</code> y <code>usuario_rol</code>.</li>
+          <li>El token lleva identidad y roles; cada petición del portal lo envía en <code>Authorization</code>.</li>
+          <li>Roles: <b>Administrador</b> y <b>Docente</b> (ya construidos) y <b>Control escolar</b> (Coordinación). Operador biométrico ya no parece necesario: el Administrador puede enrolar a los docentes (por confirmar).</li>
+          <li>Los alumnos no inician sesión.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>API key para el reloj checador</h3>
+        <ul>
+          <li>Cada lector registrado en <code>lector_huella</code> tiene su propia clave; se puede rotar o revocar desde el portal.</li>
+          <li>Solo alcanza los endpoints del dispositivo: plantillas de los docentes, checadas y latido de conexión.</li>
+          <li>Estructuralmente no puede llegar a endpoints administrativos.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Pieza por pieza</span>
+    <h2>Horarios, checada y pase de lista</h2>
+    <div class="three">
+      <div class="panel">
+        <h3>Disponibilidad y horarios</h3>
+        <div class="steps">
+          <span class="s">Coordinación abre el periodo</span><span class="arrow">→</span>
+          <span class="s">Docente llena el formulario</span><span class="arrow">→</span>
+          <span class="s"><code>disponibilidad_docente</code></span><span class="arrow">→</span>
+          <span class="s">Tablero de horarios</span><span class="arrow">→</span>
+          <span class="s">Publicar</span>
+        </div>
+        <ul class="note">
+          <li>En cada hueco sugiere docentes disponibles de esa modalidad.</li>
+          <li>Empalmes de aula y de docente: los rechaza la base. Fuera de la disponibilidad: solo aviso.</li>
+          <li>Falta la modalidad en <code>disponibilidad_docente</code> (propuesta para BD) y el formato oficial del horario (límite 16/10).</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Docentes: reloj checador</h3>
+        <div class="steps">
+          <span class="s">Enrolar: 2 dedos, 4 lecturas</span><span class="arrow">→</span>
+          <span class="s">Dedo en el lector</span><span class="arrow">→</span>
+          <span class="s">Verde, roja o amarilla</span><span class="arrow">→</span>
+          <span class="s"><code>checada</code></span><span class="arrow">→</span>
+          <span class="s"><code>asistencia_docente</code></span>
+        </div>
+        <ul class="note">
+          <li>La API compara las checadas con el horario: a tiempo, retardo o falta, con hora de entrada y salida.</li>
+          <li>Plantilla ISO 19794-2 con autorización firmada del docente; nunca se guarda la imagen.</li>
+          <li>Sin red, cola local; si el lector falla, Control escolar registra la entrada a mano.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Alumnos: pase de lista</h3>
+        <div class="steps">
+          <span class="s">Sesiones del día desde el horario</span><span class="arrow">→</span>
+          <span class="s">Docente abre su clase</span><span class="arrow">→</span>
+          <span class="s">Todos en presente; toca excepciones</span><span class="arrow">→</span>
+          <span class="s"><code>asistencia</code> manual</span>
+        </div>
+        <ul class="note">
+          <li>Igual para bachillerato y licenciatura: <b>P</b>, <b>A</b>, <b>R</b> o <b>J</b>.</li>
+          <li>Propuesta: la sesión cuenta como impartida cuando el docente checa o pasa lista; si no llega, sus alumnos no acumulan falta.</li>
+          <li>De la lista salen la lista mensual oficial, las faltas por parcial del acta y las alertas de riesgo.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Base de datos</span>
+    <h2>Cómo usa la API la base del equipo de BD</h2>
+    <p>El modelo del portal se reestructura sobre el esquema del equipo de BD (45 tablas con su propuesta de integración). Tablas clave: <code>persona</code>, <code>alumno</code>, <code>docente</code>, <code>usuario</code> y <code>rol</code>; <code>periodo</code>, <code>grupo</code>, <code>clase</code>, <code>inscripcion</code>, <code>disponibilidad_docente</code> y <code>horario_clase</code>; <code>sesion_clase</code> y <code>asistencia</code>; <code>lector_huella</code>, <code>huella</code>, <code>checada</code> y <code>asistencia_docente</code>; <code>calificacion</code> y <code>bitacora</code>.</p>
+    <ol class="rules">
+      <li><span><b>Programación no crea tablas.</b> JPA en modo <code>validate</code> sobre el esquema existente; si falta algo, se propone un script <code>.sql</code> al equipo de BD.</span></li>
+      <li><span><b>Leer con vistas, escribir en tablas.</b> Horarios, kardex, actas y resúmenes ya vienen armados en las vistas <code>v_*</code>.</span></li>
+      <li><span><b>«Borrar» es dar de baja.</b> Se cambia <code>estatus</code> o <code>activo</code>; la base no deja borrar catálogos en uso.</span></li>
+      <li><span><b>Errores de la base, claros para el usuario.</b> Duplicado, referencia inválida o regla incumplida se devuelven como 409 o 422 con el mensaje de la base.</span></li>
+      <li><span><b>Credenciales fuera del código.</b> Cuenta de tipo «aplicación» en variables de entorno.</span></li>
+      <li><span><b>Base de desarrollo en Coolify</b> con el esquema integrado y los datos de demostración; pruebas de la API contra PostgreSQL real.</span></li>
+    </ol>
+    <p class="note">Por el cambio del 18/09 la base necesita ajustes que propone Programación y aprueba Miguelito: huella solo de docentes (hoy acepta también bachillerato), modalidad en la disponibilidad y quién llena <code>asistencia_docente</code>. La conciliación de alumnos de la base queda sin uso.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Portal</span>
+    <h2>Mapa del portal</h2>
+    <p>Parte de las siete secciones de la planeación del portal y suma lo que pide la escuela. La fase es la del calendario de abajo.</p>
+    <div class="table-wrap">
+      <table class="wide">
+        <thead><tr><th>Sección</th><th>Contenido</th><th>Quién la ve</th><th>Fase</th></tr></thead>
+        <tbody>
+          <tr><td class="section-name">Login</td><td>Acceso único para el personal; los alumnos no tienen cuenta</td><td>Todo el personal</td><td><span class="chip adapt">1</span></td></tr>
+          <tr><td class="section-name">Catálogos académicos</td><td>Periodos (tetramestres), carreras y planes, materias, turnos, aulas y grupos</td><td>Administrador, Control escolar</td><td><span class="chip adapt">1</span></td></tr>
+          <tr><td class="section-name">Alumnos</td><td>Alta, baja y edición · inscripción a grupo · padre, madre o tutor · contacto de emergencia</td><td>Administrador, Control escolar</td><td><span class="chip todo">2</span></td></tr>
+          <tr><td class="section-name">Docentes</td><td>Fichas, especialidad, cédula, currículum, certificaciones y estado de su huella</td><td>Administrador, Control escolar</td><td><span class="chip todo">2</span></td></tr>
+          <tr><td class="section-name">Pase de lista</td><td>Celular · sus clases de hoy · presente, falta, retardo o justificada · agregar o dar de baja alumnos de sus grupos · historial por alumno</td><td>Docente (sus grupos)</td><td><span class="chip todo">2</span></td></tr>
+          <tr><td class="section-name">Disponibilidad</td><td>Celular · formulario del tetramestre: modalidades, días y horas · quién ya respondió</td><td>Docente; Control escolar ve las respuestas</td><td><span class="chip todo">3</span></td></tr>
+          <tr><td class="section-name">Horarios</td><td>Tablero de grupos y horas con sugerencias según la disponibilidad · sin traslapes, también sábado · publicar</td><td>Control escolar, Administrador; Docente (el suyo)</td><td><span class="chip todo">3</span></td></tr>
+          <tr><td class="section-name">Asistencia de docentes</td><td>Checadas contra el horario: a tiempo, retardo, falta y horas trabajadas · registro manual si falla el lector</td><td>Control escolar, Administrador; Docente (la suya)</td><td><span class="chip todo">3</span></td></tr>
+          <tr><td class="section-name">Dispositivos</td><td>Lectores · rotar o revocar su clave · en línea y última sincronización</td><td>Administrador</td><td><span class="chip todo">3</span></td></tr>
+          <tr><td class="section-name">Asistencia de alumnos</td><td>Consulta con filtros · justificantes · alumnos en riesgo</td><td>Control escolar</td><td><span class="chip todo">3</span></td></tr>
+          <tr><td class="section-name">Calificaciones y acta</td><td>Captura por parcial · faltas por parcial tomadas del pase de lista · acta oficial</td><td>Docente (sus grupos), Control escolar</td><td><span class="chip todo">4</span></td></tr>
+          <tr><td class="section-name">Cierre de tetramestre</td><td>Fechas de firma de acta y extraordinarios · acuse de enterado · segunda y tercera oportunidad</td><td>Control escolar</td><td><span class="chip todo">4</span></td></tr>
+          <tr><td class="section-name">Dashboard</td><td>Control escolar: docentes que no han checado, asistencia del día y lectores · Docente: sus clases del día</td><td>Administrador, Control escolar, Docente</td><td><span class="chip todo">5</span></td></tr>
+          <tr><td class="section-name">Reportes</td><td>Filtros por docente, alumno, grupo, materia y fecha · PDF y Excel · horas de docentes · kardex, riesgo, datos incompletos · formatos oficiales</td><td>Administrador, Control escolar, Docente (sus grupos)</td><td><span class="chip todo">5</span></td></tr>
+          <tr><td class="section-name">Proyectos finales</td><td>Ficha informativa con carreras participantes y visto bueno de Coordinación</td><td>Control escolar, Docente</td><td><span class="chip todo">5</span></td></tr>
+          <tr><td class="section-name">Auditoría</td><td>Qué se creó, editó o dio de baja, quién y cuándo (<code>bitacora</code>) · checada biométrica o manual</td><td>Administrador</td><td><span class="chip todo">5</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>Estado de avance</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Módulo</th><th>Estado</th><th>Siguiente paso</th></tr></thead>
+        <tbody>
+          <tr><td>Portal: autenticación y roles</td><td><span class="chip done">Construido</span></td><td>Pasar a <code>usuario</code>, <code>rol</code> y <code>usuario_rol</code>; sumar Control escolar</td></tr>
+          <tr><td>Portal: catálogos académicos</td><td><span class="chip done">Construido</span></td><td>Reestructurar sobre periodos, carreras, <code>clase</code> y <code>horario_clase</code>; conservar la validación de traslapes</td></tr>
+          <tr><td>API: login, catálogos y lectores</td><td><span class="chip adapt">En su rama</span></td><td>JWT, periodos, carreras, planes, materias, turnos, aulas, lectores con API key y recepción de checadas; integrar en <code>master</code></td></tr>
+          <tr><td>API: conciliación cada 5 min</td><td><span class="chip adapt">Reorientar</span></td><td>Estaba pensada para alumnos: pasa a comparar las checadas de los docentes con su horario</td></tr>
+          <tr><td>Pase de lista del docente</td><td><span class="chip todo">Pendiente</span></td><td>Fase 2, con grupos, inscripciones y sesiones del día</td></tr>
+          <tr><td>Disponibilidad y horarios</td><td><span class="chip todo">Pendiente</span></td><td>Fase 3, con la propuesta de modalidad para BD</td></tr>
+          <tr><td>Dashboard, reportes y auditoría</td><td><span class="chip todo">Pendiente</span></td><td>Fase 5, sobre las vistas de la base</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Lineamientos visuales</span>
+    <h2>Cómo se ve y se comporta el portal</h2>
+    <div class="two">
+      <div class="panel avoid">
+        <h3>Evitar</h3>
+        <ul>
+          <li>Pedir toda la información de un jalón, sin filtros.</li>
+          <li>Traer, por ejemplo, 5 000 registros y que la pantalla se trabe al mostrarlos.</li>
+          <li>Pantallas del docente que solo se usan bien en computadora.</li>
+        </ul>
+      </div>
+      <div class="panel do">
+        <h3>Recomendado</h3>
+        <ul>
+          <li>El usuario elige qué ver antes de pedir nada (grupo 1A, fecha de hoy).</li>
+          <li>Se pide solo esa porción, en páginas pequeñas: llegan 20 filas al instante.</li>
+          <li>Celular primero en pase de lista y disponibilidad: botones grandes, un toque por alumno, menos de un minuto por grupo.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="swatch"><div class="color" style="background:#1565C0"></div><div class="info"><b>Primario</b><code>#1565C0</code><span>Barra superior, botones principales, enlaces</span></div></div>
+      <div class="swatch"><div class="color" style="background:#2E7D32"></div><div class="info"><b>Éxito</b><code>#2E7D32</code><span>Presente, a tiempo, confirmaciones</span></div></div>
+      <div class="swatch"><div class="color" style="background:#C62828"></div><div class="info"><b>Error</b><code>#C62828</code><span>Falta, errores, acciones destructivas</span></div></div>
+      <div class="swatch"><div class="color" style="background:#B8860B"></div><div class="info"><b>Advertencia</b><code>#B8860B</code><span>Retardo, pendientes y avisos que no son error</span></div></div>
+      <div class="swatch"><div class="color" style="background:#F5F5F5; border-bottom: 1px solid var(--line)"></div><div class="info"><b>Fondo neutro</b><code>#F5F5F5</code><span>Fondo general</span></div></div>
+      <div class="swatch"><div class="color" style="background:#333333"></div><div class="info"><b>Texto</b><code>#333333</code><span>Texto principal y bordes</span></div></div>
+    </div>
+    <p class="note">La paleta se define en un solo lugar del tema de Vuetify, así que puede cambiarse por los colores institucionales sin rehacer pantallas. Los mismos significados sirven en el reloj checador: verde reconocido, rojo no reconocido, amarillo mala lectura o sin conexión. Logo: mientras no haya uno, se usa el nombre del proyecto en texto; no detiene el desarrollo.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">Alcance</span>
+    <h2>Qué entra y qué no</h2>
+    <div class="two">
+      <div class="panel in">
+        <h3>Dentro</h3>
+        <ul>
+          <li>Huella solo para la checada de los docentes (único método biométrico).</li>
+          <li>Formulario de disponibilidad y armado asistido de horarios.</li>
+          <li>Pase de lista del docente para todos los alumnos: presente, ausente, retardo y justificado; el acta usa las faltas.</li>
+          <li>Asistencia y horas de docentes.</li>
+          <li>Calificaciones y acta, cierre de tetramestre y proyectos finales.</li>
+          <li>Exportación de reportes a PDF y Excel.</li>
+        </ul>
+      </div>
+      <div class="panel out">
+        <h3>Fuera por ahora</h3>
+        <ul>
+          <li>Huella de alumnos (decidido el 18/09).</li>
+          <li>Armado automático de horarios: el sistema sugiere y valida, decide Coordinación.</li>
+          <li>Reconocimiento facial.</li>
+          <li>Notificaciones a padres de familia.</li>
+          <li>App nativa de consulta (fase futura).</li>
+          <li>Cuentas para alumnos.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Reparto</span>
+    <h2>Qué lleva cada uno</h2>
+    <div class="people">
+      <article class="person">
+        <h3>Reloj checador e integración</h3>
+        <span class="who">Brandon, líder · puertos 5000–5099</span>
+        <ul>
+          <li>SDK del U.are.U y su licencia.</li>
+          <li>App JavaFX: kiosco de checada (entrada y salida) y enrolamiento de docentes, con lector real y simulado.</li>
+          <li>Contrato <code>openapi.yaml</code>, revisión e integración en <code>master</code>.</li>
+          <li>Base de desarrollo y despliegue en Coolify.</li>
+          <li>Coordinación con el equipo de BD y con la escuela; presentaciones.</li>
+        </ul>
+        <div class="stack">Java 21 · JavaFX · SDK U.are.U · Coolify</div>
+      </article>
+      <article class="person">
+        <h3>API central</h3>
+        <span class="who">Carlitos · puertos 5100–5199</span>
+        <ul>
+          <li>Integrar el backend ya construido y reestructurarlo sobre el esquema del equipo de BD.</li>
+          <li>JWT y API key, roles y permisos con <code>@PreAuthorize</code>.</li>
+          <li>Disponibilidad y horarios, sesiones del día y pase de lista.</li>
+          <li>Asistencia de docentes: sus checadas contra el horario.</li>
+          <li>Errores de la base traducidos y pruebas contra PostgreSQL real.</li>
+        </ul>
+        <div class="stack">Java 21 · Spring Boot · Security · JPA · jjwt</div>
+      </article>
+      <article class="person">
+        <h3>Portal</h3>
+        <span class="who">Valky · puertos 5300–5399</span>
+        <ul>
+          <li>Plataforma de asistencia del docente, pensada para el celular.</li>
+          <li>Formulario de disponibilidad y tablero para armar horarios.</li>
+          <li>Demás pantallas por fase del mapa del portal.</li>
+          <li>Servicios contra el contrato; rutas y menús por rol.</li>
+          <li>Lineamientos visuales: filtros, paginación y paleta en el tema de Vuetify.</li>
+        </ul>
+        <div class="stack">Vue 3 · Vite · Vuetify · Pinia · Vue Router · Axios</div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Calendario</span>
+    <h2>Fases y presentaciones</h2>
+    <p>Del jueves 10/09 al martes 24/11/2026. El pase de lista va antes que los horarios porque no depende del formato del horario ni de las preguntas abiertas, y es lo que pide Análisis para las primeras demostraciones. El detalle por tarea está en el Gantt <code>docs/planeacion/Gantt_Programacion.xlsx</code>.</p>
+    <div class="table-wrap">
+      <table class="wide">
+        <thead><tr><th>Fase</th><th>Fechas</th><th>Reloj checador e integración</th><th>API</th><th>Portal</th></tr></thead>
+        <tbody>
+          <tr><td><b>0 · Análisis y planeación</b> <span class="chip done">Completada</span></td><td class="date">10–17/09</td><td>Contexto con el modelo de BD · plan v1 (v2 el 18/09)</td><td>—</td><td>Planeación, lineamientos visuales y portal v0 (sesión y catálogos)</td></tr>
+          <tr><td><b>1 · Cimientos</b> <span class="chip adapt">En curso</span></td><td class="date">17–30/09</td><td>Alta de Valky ✓ · SDK y licencia · repositorio y contrato v0 · base de desarrollo · lector simulado</td><td>Backend integrado al esquema real · errores de la base y pruebas</td><td>Tema con la paleta · rutas por rol · catálogos (periodo, grupos, materias)</td></tr>
+          <tr class="milestone"><td colspan="5">24/09 · Presentación: nuevo funcionamiento, periodo, grupos y materias</td></tr>
+          <tr><td><b>2 · Personas y pase de lista</b></td><td class="date">29/09–14/10</td><td>Enrolamiento de docentes · pruebas del lector con el equipo de BD</td><td>Alumnos, docentes, tutores · grupos, inscripciones, sesiones del día y pase de lista</td><td>Alumnos y docentes · plataforma de asistencia del docente (celular)</td></tr>
+          <tr class="milestone"><td colspan="5">1/10 · Presentación: catálogos y sesión por rol &nbsp;·&nbsp; 8/10 · Presentación: alumnos, grupos y pase de lista</td></tr>
+          <tr><td><b>3 · Disponibilidad, horarios y checada</b></td><td class="date">12–28/10</td><td>Reloj checador con cola sin conexión · lector real</td><td>Disponibilidad y horarios · checadas contra el horario y asistencia de docentes · dispositivos</td><td>Formulario de disponibilidad · tablero de horarios · asistencia de docentes y consulta de alumnos</td></tr>
+          <tr class="milestone"><td colspan="5">15/10 · Presentación: disponibilidad y armado de horarios &nbsp;·&nbsp; 16/10 · Límite del formato de horario &nbsp;·&nbsp; 22/10 · Presentación: checada del docente y pase de lista</td></tr>
+          <tr><td><b>4 · Evaluación y cierre</b></td><td class="date">26/10–11/11</td><td>Checada manual de respaldo · reintentos · despliegue de prueba</td><td>Calificaciones y acta con faltas por parcial · horario con el formato oficial · cierre y extraordinarios</td><td>Parciales y acta · ajustes del tablero · cierre de tetramestre</td></tr>
+          <tr class="milestone"><td colspan="5">29/10 · Presentación: actas y permisos &nbsp;·&nbsp; 5/11 · Presentación: cierre y contingencias &nbsp;·&nbsp; 6/11 · Entrega del módulo de BD</td></tr>
+          <tr><td><b>5 · Reportes y datos oficiales</b></td><td class="date">9–17/11</td><td>Datos oficiales · prueba de un día completo</td><td>Reportes (formatos oficiales y horas de docentes) y exportación · bitácora · proyectos finales</td><td>Dashboard · reportes · auditoría · proyectos finales</td></tr>
+          <tr class="milestone"><td colspan="5">12/11 · Presentación: reportes y datos oficiales</td></tr>
+          <tr><td><b>6 · Estabilización y entrega</b></td><td class="date">16–24/11</td><td colspan="3">Documentación y manual · congelamiento 18–22/11 · montaje (Brandon) · 19/11 presentación final de avances · 23/11 ensayo: un día de clases con checada y pase de lista</td></tr>
+          <tr class="milestone"><td colspan="5"><b>24/11 · Entrega final del proyecto</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Repositorio</span>
+    <h2>Estructura y forma de trabajo</h2>
+    <div class="two">
+      <div class="panel">
+        <h3>Carpetas del proyecto</h3>
+        <ul>
+          <li><code>api/</code> Spring Boot</li>
+          <li><code>web/</code> portal Vue 3 + Vuetify</li>
+          <li><code>escritorio/</code> reloj checador JavaFX + SDK del lector</li>
+          <li><code>contrato/openapi.yaml</code> endpoints acordados</li>
+          <li><code>db/</code> scripts y propuestas para el equipo de BD</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>Reglas del equipo</h3>
+        <ul>
+          <li>Cada quien en su worktree y su rama; el líder integra en <code>master</code>.</li>
+          <li>Commits pequeños en español; código en inglés y comentarios en español.</li>
+          <li>Todo endpoint nuevo entra primero al contrato.</li>
+          <li>Servidores solo en el rango de puertos de cada quien.</li>
+          <li>Ver el portal desde la computadora propia: <code>ssh -N -L &lt;puerto&gt;:localhost:&lt;puerto&gt; crazykiller</code>.</li>
+          <li>Nada de datos reales ni contraseñas en el repositorio.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Pendientes</span>
+    <h2>Lo que hay que resolver ya</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Qué</th><th>Quién</th><th>Por qué</th></tr></thead>
+        <tbody>
+          <tr><td>Resolver las preguntas del funcionamiento (checada por día o por clase, horas, lectores, alta de alumnos, alcance)</td><td>Brandon</td><td><span class="chip risk">Bloquea diseño</span> cambian la asistencia de docentes y quién administra los grupos</td></tr>
+          <tr><td>SDK del U.are.U y su licencia</td><td>Brandon</td><td><span class="chip risk">Riesgo técnico</span> sin SDK no hay reloj checador</td></tr>
+          <tr><td>Propuesta <code>.sql</code>: huella solo de docentes y modalidad en la disponibilidad</td><td>Carlitos · equipo de BD</td><td>La base hoy acepta huella de bachillerato y no guarda la modalidad</td></tr>
+          <tr><td>Reorientar la conciliación de la API a docentes</td><td>Carlitos</td><td>Checadas contra el horario → <code>asistencia_docente</code></td></tr>
+          <tr><td>Cuándo una sesión cuenta como impartida</td><td>Carlitos · equipo de BD</td><td>Propuesta: cuando el docente checa o pasa lista</td></tr>
+          <tr><td>Tolerancia de retardo del docente y cómo se cuentan sus horas</td><td>Brandon con Coordinación</td><td>Define a tiempo, retardo y falta del docente</td></tr>
+          <tr><td>Subir a la rama de Valky el portal construido</td><td>Brandon · Valky</td><td>Hoy el código no está en el repositorio</td></tr>
+          <tr><td>Base de desarrollo en Coolify con el esquema integrado</td><td>Brandon</td><td>Programación no llega a la base de Miguelito</td></tr>
+          <tr><td>Cargar los roles del sistema en <code>rol</code></td><td>Equipo de BD</td><td>La tabla está vacía y la API los necesita</td></tr>
+          <tr><td>Validar con la escuela el nuevo funcionamiento y los campos del formulario de disponibilidad</td><td>Yoixe · Valky</td><td>El formulario es el inicio de todo el flujo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Plan v2 del 18/09/2026: adapta el plan v1 (17/09) al funcionamiento definido ese día. Integra la planeación del portal y sus lineamientos visuales (Valky), los entregables del equipo de base de datos y el plan del líder de Programación.
+  </footer>
+
+</div>
+
+</body></html>

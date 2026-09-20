@@ -1,0 +1,13 @@
+openapi: 3.0.3
+info:
+  title: API Sistema de Control Escolar CNCI
+  version: "0.0.1"
+  description: >
+    Contrato acordado entre Brandon (reloj checador), Carlitos (API central)
+    y Valky (portal). Todo endpoint nuevo entra aquí antes de programarse.
+servers:
+  - url: http://localhost:5100
+    description: API central en desarrollo
+paths: {}
+components:
+  schemas: {}
