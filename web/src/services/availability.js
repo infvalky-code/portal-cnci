@@ -31,9 +31,26 @@ async function guardarDisponibilidadFalso(disponibilidad) {
   return disponibilidad
 }
 
+async function listarDisponibilidadesPeriodoFalso(periodoId) {
+  await esperar(300)
+  return disponibilidadesFalsas.filter((d) => d.periodoId === periodoId)
+}
+
 function manejarError(error) {
   const mensaje = error.response?.data?.mensaje ?? error.message
   throw new Error(mensaje)
+}
+
+export async function listarDisponibilidadesPeriodo(periodoId) {
+  if (usaDatosFalsos) {
+    return listarDisponibilidadesPeriodoFalso(periodoId)
+  }
+  try {
+    const respuesta = await httpClient.get('/disponibilidades', { params: { periodoId } })
+    return respuesta.data
+  } catch (error) {
+    manejarError(error)
+  }
 }
 
 export async function obtenerDisponibilidad(docenteId, periodoId) {

@@ -788,6 +788,178 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /disponibilidades:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Todas las
+        disponibilidades capturadas en un periodo, para que el tablero de
+        horarios sugiera docentes disponibles.
+      operationId: listarDisponibilidadesPeriodo
+      parameters:
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Disponibilidades del periodo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Disponibilidad'
+  /horarios:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. Devuelve todos los
+        bloques de horario del periodo (de todos los grupos), para armar el
+        tablero de un grupo y para detectar empalmes entre grupos.
+      operationId: listarHorarios
+      parameters:
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Bloques de horario del periodo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BloqueHorario'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Guarda o
+        reemplaza un bloque de horario (grupo + día). Empalmes de aula y de
+        docente los rechaza la base (409); fuera de la disponibilidad
+        declarada del docente es solo aviso, el portal lo valida y no bloquea.
+      operationId: guardarBloqueHorario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BloqueHorario'
+      responses:
+        '200':
+          description: Bloque guardado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BloqueHorario'
+        '409':
+          description: Empalme de aula o de docente, mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /horarios/publicado:
+    get:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Estado de publicación del horario de un grupo.
+      operationId: obtenerPublicacionHorario
+      parameters:
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: grupoId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Estado de publicación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoPublicacion'
+  /horarios/publicar:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Publica el
+        horario del grupo; a partir de ahí el docente puede verlo.
+      operationId: publicarHorario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [periodoId, grupoId]
+              properties:
+                periodoId:
+                  type: string
+                grupoId:
+                  type: string
+      responses:
+        '200':
+          description: Horario publicado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoPublicacion'
+  /asistencia-docentes:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. Compara checadas
+        (biométricas o manuales) contra el bloque de horario del día. Nunca
+        expone la plantilla biométrica, solo el resultado. La tolerancia de
+        retardo es configuración, no está resuelta con la escuela todavía
+        (pendiente documentado); el portal trae un valor de ejemplo.
+      operationId: listarAsistenciaDocentes
+      parameters:
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: docenteId
+          in: query
+          schema: { type: string }
+        - name: fecha
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Checadas del periodo, comparadas contra el horario
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AsistenciaDocente'
+  /asistencia-docentes/manual:
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Registro manual
+        de respaldo cuando el lector falla; no es un parche, es un camino de
+        primera clase.
+      operationId: registrarAsistenciaDocenteManual
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AsistenciaDocenteManualRequest'
+      responses:
+        '201':
+          description: Checada manual registrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AsistenciaDocente'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -1229,3 +1401,76 @@ components:
           type: array
           items:
             type: string
+    BloqueHorario:
+      type: object
+      required: [periodoId, grupoId, turnoId, dia, materiaId, docenteId, aulaId]
+      properties:
+        periodoId:
+          type: string
+        grupoId:
+          type: string
+        turnoId:
+          type: string
+        dia:
+          type: string
+          enum: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+        materiaId:
+          type: string
+        docenteId:
+          type: string
+        aulaId:
+          type: string
+    EstadoPublicacion:
+      type: object
+      required: [publicado]
+      properties:
+        publicado:
+          type: boolean
+    AsistenciaDocente:
+      type: object
+      required: [id, docenteId, periodoId, fecha, dia, origen, estado]
+      properties:
+        id:
+          type: string
+        docenteId:
+          type: string
+        periodoId:
+          type: string
+        fecha:
+          type: string
+          format: date
+        dia:
+          type: string
+          enum: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+        horaEntrada:
+          type: string
+          description: Formato HH:mm
+        horaSalida:
+          type: string
+          description: Formato HH:mm
+        origen:
+          type: string
+          enum: [Biométrica, Manual]
+        estado:
+          type: string
+          enum: [A tiempo, Retardo, Falta]
+        horasTrabajadas:
+          type: number
+    AsistenciaDocenteManualRequest:
+      type: object
+      required: [docenteId, periodoId, fecha, dia, horaEntrada, horaSalida]
+      properties:
+        docenteId:
+          type: string
+        periodoId:
+          type: string
+        fecha:
+          type: string
+          format: date
+        dia:
+          type: string
+          enum: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+        horaEntrada:
+          type: string
+        horaSalida:
+          type: string
