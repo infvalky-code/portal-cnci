@@ -199,6 +199,301 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /turnos:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarTurnos
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: texto
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de turnos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TurnoPagina'
+    post:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un turno.
+      operationId: crearTurno
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TurnoRequest'
+      responses:
+        '201':
+          description: Turno creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Turno'
+        '409':
+          description: Conflicto (duplicado) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /turnos/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja el
+        turno (activo = false). No existe eliminación física.
+      operationId: darDeBajaTurno
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Turno dado de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Turno'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /aulas:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarAulas
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: texto
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de aulas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AulaPagina'
+    post:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un aula.
+      operationId: crearAula
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AulaRequest'
+      responses:
+        '201':
+          description: Aula creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aula'
+        '409':
+          description: Conflicto (duplicado) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /aulas/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja el
+        aula (activo = false). No existe eliminación física.
+      operationId: darDeBajaAula
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Aula dada de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aula'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /materias:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarMaterias
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: carreraId
+          in: query
+          schema: { type: string }
+        - name: texto
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de materias
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MateriaPagina'
+    post:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de una materia.
+      operationId: crearMateria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MateriaRequest'
+      responses:
+        '201':
+          description: Materia creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Materia'
+        '409':
+          description: Conflicto (duplicado) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /materias/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja la
+        materia (activo = false). No existe eliminación física.
+      operationId: darDeBajaMateria
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Materia dada de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Materia'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /grupos:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarGrupos
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: periodoId
+          in: query
+          schema: { type: string }
+        - name: carreraId
+          in: query
+          schema: { type: string }
+        - name: texto
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de grupos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrupoPagina'
+    post:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un grupo.
+      operationId: crearGrupo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrupoRequest'
+      responses:
+        '201':
+          description: Grupo creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grupo'
+        '409':
+          description: Conflicto (duplicado, traslape o regla incumplida) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /grupos/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja el
+        grupo (activo = false). No existe eliminación física.
+      operationId: darDeBajaGrupo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Grupo dado de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Grupo'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -309,6 +604,154 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Carrera'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Turno:
+      type: object
+      required: [id, nombre, activo]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        activo:
+          type: boolean
+    TurnoRequest:
+      type: object
+      required: [nombre]
+      properties:
+        nombre:
+          type: string
+    TurnoPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Turno'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Aula:
+      type: object
+      required: [id, clave, capacidad, activo]
+      properties:
+        id:
+          type: string
+        clave:
+          type: string
+        capacidad:
+          type: integer
+        activo:
+          type: boolean
+    AulaRequest:
+      type: object
+      required: [clave, capacidad]
+      properties:
+        clave:
+          type: string
+        capacidad:
+          type: integer
+    AulaPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aula'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Materia:
+      type: object
+      required: [id, clave, nombre, carreraId, activo]
+      properties:
+        id:
+          type: string
+        clave:
+          type: string
+        nombre:
+          type: string
+        carreraId:
+          type: string
+        activo:
+          type: boolean
+    MateriaRequest:
+      type: object
+      required: [clave, nombre, carreraId]
+      properties:
+        clave:
+          type: string
+        nombre:
+          type: string
+        carreraId:
+          type: string
+    MateriaPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Materia'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Grupo:
+      type: object
+      required: [id, nombre, periodoId, carreraId, turnoId, cupo, activo]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        periodoId:
+          type: string
+        carreraId:
+          type: string
+        turnoId:
+          type: string
+        cupo:
+          type: integer
+        activo:
+          type: boolean
+    GrupoRequest:
+      type: object
+      required: [nombre, periodoId, carreraId, turnoId, cupo]
+      properties:
+        nombre:
+          type: string
+        periodoId:
+          type: string
+        carreraId:
+          type: string
+        turnoId:
+          type: string
+        cupo:
+          type: integer
+    GrupoPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Grupo'
         total:
           type: integer
         pagina:
