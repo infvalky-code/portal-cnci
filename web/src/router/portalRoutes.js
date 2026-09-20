@@ -5,6 +5,7 @@ import ShiftsView from '@/views/ShiftsView.vue'
 import ClassroomsView from '@/views/ClassroomsView.vue'
 import SubjectsView from '@/views/SubjectsView.vue'
 import GroupsView from '@/views/GroupsView.vue'
+import StudentsView from '@/views/StudentsView.vue'
 
 // Cada pantalla real dentro del layout con sesión agrega meta.roles (quién la
 // ve en el menú y quién puede entrar) y, si aparece en el menú lateral,
@@ -57,6 +58,14 @@ export const rutasDelPortal = [
     meta: {
       roles: ['Administrador', 'Control escolar'],
       menu: { titulo: 'Grupos' }
+    }
+  },
+  {
+    path: 'alumnos',
+    component: StudentsView,
+    meta: {
+      roles: ['Administrador', 'Control escolar'],
+      menu: { titulo: 'Alumnos' }
     }
   }
 ]

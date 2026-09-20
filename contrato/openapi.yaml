@@ -494,6 +494,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /alumnos:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarAlumnos
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: carreraId
+          in: query
+          schema: { type: string }
+        - name: grupoId
+          in: query
+          schema: { type: string }
+        - name: texto
+          in: query
+          description: Búsqueda por nombre o matrícula
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de alumnos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlumnoPagina'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un
+        alumno. La matrícula solo pide letra + 3 dígitos; el prefijo 1320 lo
+        antepone la base (trigger ya documentado en
+        "Cambios en la base de datos escolar.docx").
+      operationId: crearAlumno
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlumnoRequest'
+      responses:
+        '201':
+          description: Alumno creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alumno'
+        '409':
+          description: Conflicto (matrícula duplicada) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Datos inválidos según la base (formato de matrícula, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /alumnos/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja el
+        alumno (activo = false). No existe eliminación física.
+      operationId: darDeBajaAlumno
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Alumno dado de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alumno'
+        '409':
+          description: No se puede dar de baja, mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -752,6 +839,67 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Grupo'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Alumno:
+      type: object
+      required: [id, matricula, nombre, carreraId, activo]
+      properties:
+        id:
+          type: string
+        matricula:
+          type: string
+          description: Formato completo 1320 + 1 letra + 3 dígitos, ej. 1320G130
+        nombre:
+          type: string
+        carreraId:
+          type: string
+        grupoId:
+          type: string
+          nullable: true
+        tutorNombre:
+          type: string
+        tutorTelefono:
+          type: string
+        contactoEmergenciaNombre:
+          type: string
+        contactoEmergenciaTelefono:
+          type: string
+        activo:
+          type: boolean
+    AlumnoRequest:
+      type: object
+      required: [matriculaSufijo, nombre, carreraId]
+      properties:
+        matriculaSufijo:
+          type: string
+          description: Solo letra + 3 dígitos; la base antepone 1320
+        nombre:
+          type: string
+        carreraId:
+          type: string
+        grupoId:
+          type: string
+        tutorNombre:
+          type: string
+        tutorTelefono:
+          type: string
+        contactoEmergenciaNombre:
+          type: string
+        contactoEmergenciaTelefono:
+          type: string
+    AlumnoPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Alumno'
         total:
           type: integer
         pagina:
