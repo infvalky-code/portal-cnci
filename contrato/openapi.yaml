@@ -1047,6 +1047,67 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Dispositivo'
+  /calificaciones:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarCalificaciones
+      parameters:
+        - name: grupoId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: materiaId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Calificaciones del grupo y materia
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistroCalificacion'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Guarda o
+        reemplaza las calificaciones del grupo y materia.
+      operationId: guardarCalificaciones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [grupoId, materiaId, registros]
+              properties:
+                grupoId:
+                  type: string
+                materiaId:
+                  type: string
+                registros:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RegistroCalificacion'
+      responses:
+        '200':
+          description: Calificaciones guardadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistroCalificacion'
+        '422':
+          description: Calificación fuera de rango (0-10), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -1613,3 +1674,17 @@ components:
           type: integer
         tamanoPagina:
           type: integer
+    RegistroCalificacion:
+      type: object
+      required: [alumnoId, parciales]
+      properties:
+        alumnoId:
+          type: string
+        parciales:
+          type: array
+          description: Cuatro calificaciones (0-10), null si no se ha capturado ese parcial
+          items:
+            type: number
+            nullable: true
+          minItems: 4
+          maxItems: 4
