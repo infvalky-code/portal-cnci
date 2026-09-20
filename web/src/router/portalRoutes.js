@@ -11,6 +11,7 @@ import AttendanceView from '@/views/AttendanceView.vue'
 import AvailabilityView from '@/views/AvailabilityView.vue'
 import ScheduleBoardView from '@/views/ScheduleBoardView.vue'
 import TeacherAttendanceView from '@/views/TeacherAttendanceView.vue'
+import DevicesView from '@/views/DevicesView.vue'
 
 // Cada pantalla real dentro del layout con sesión agrega meta.roles (quién la
 // ve en el menú y quién puede entrar) y, si aparece en el menú lateral,
@@ -111,6 +112,14 @@ export const rutasDelPortal = [
     meta: {
       roles: ['Administrador', 'Control escolar'],
       menu: { titulo: 'Asistencia de docentes' }
+    }
+  },
+  {
+    path: 'dispositivos',
+    component: DevicesView,
+    meta: {
+      roles: ['Administrador'],
+      menu: { titulo: 'Dispositivos' }
     }
   }
 ]

@@ -960,6 +960,93 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /dispositivos:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. Nunca devuelve la
+        clave completa, solo una máscara.
+      operationId: listarDispositivos
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: texto
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de dispositivos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispositivoPagina'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un
+        lector. La clave completa solo viaja en esta respuesta, una vez.
+      operationId: crearDispositivo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DispositivoRequest'
+      responses:
+        '201':
+          description: Dispositivo creado, con la clave completa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispositivoConClave'
+        '409':
+          description: Conflicto (duplicado) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /dispositivos/{id}/rotar-clave:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Genera una
+        clave nueva e invalida la anterior. La clave completa solo viaja en
+        esta respuesta, una vez.
+      operationId: rotarClaveDispositivo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Clave rotada, con la clave completa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DispositivoConClave'
+  /dispositivos/{id}/revocar:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Revoca el
+        acceso del lector (no puede volver a autenticar). No existe
+        eliminación física.
+      operationId: revocarDispositivo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Dispositivo revocado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dispositivo'
 components:
   schemas:
     LoginRequest:
@@ -1474,3 +1561,55 @@ components:
           type: string
         horaSalida:
           type: string
+    Dispositivo:
+      type: object
+      required: [id, nombre, ubicacion, apiKeyMascara, enLinea, activo]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        ubicacion:
+          type: string
+        apiKeyMascara:
+          type: string
+          description: Solo los últimos caracteres, ej. "••••3f9a"
+        enLinea:
+          type: boolean
+        ultimaSincronizacion:
+          type: string
+          description: Fecha y hora ISO, nula si nunca se ha conectado
+          nullable: true
+        activo:
+          type: boolean
+    DispositivoConClave:
+      allOf:
+        - $ref: '#/components/schemas/Dispositivo'
+        - type: object
+          required: [apiKey]
+          properties:
+            apiKey:
+              type: string
+              description: Clave completa; el cliente la muestra una sola vez y no la guarda
+    DispositivoRequest:
+      type: object
+      required: [nombre, ubicacion]
+      properties:
+        nombre:
+          type: string
+        ubicacion:
+          type: string
+    DispositivoPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dispositivo'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
