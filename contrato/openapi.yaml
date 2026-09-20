@@ -663,6 +663,82 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /grupos/{grupoId}/asistencia:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. Hoy "clases de hoy" no
+        existe (depende de Horarios, fase 3): el docente elige el grupo
+        directamente. Cuando exista disponibilidad_docente + horario_clase,
+        este endpoint se ajusta para partir de la sesión del día.
+      operationId: obtenerAsistenciaGrupo
+      parameters:
+        - name: grupoId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: fecha
+          in: query
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Asistencia ya capturada ese día para ese grupo (vacío si no se ha tomado)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asistencia'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Guarda o
+        reemplaza la asistencia del grupo para esa fecha. Los cuatro estados
+        se capturan completos; nunca se resume la asistencia al guardar.
+      operationId: guardarAsistenciaGrupo
+      parameters:
+        - name: grupoId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Asistencia'
+      responses:
+        '200':
+          description: Asistencia guardada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Asistencia'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /alumnos/{alumnoId}/asistencias:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Historial de
+        asistencia del alumno, más reciente primero.
+      operationId: obtenerHistorialAsistenciaAlumno
+      parameters:
+        - name: alumnoId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Historial de asistencia
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegistroHistorialAsistencia'
 components:
   schemas:
     LoginRequest:
@@ -1032,3 +1108,35 @@ components:
           type: integer
         tamanoPagina:
           type: integer
+    RegistroAsistencia:
+      type: object
+      required: [alumnoId, estado]
+      properties:
+        alumnoId:
+          type: string
+        estado:
+          type: string
+          enum: [Presente, Ausente, Retardo, Justificada]
+    Asistencia:
+      type: object
+      required: [fecha, registros]
+      properties:
+        fecha:
+          type: string
+          format: date
+        registros:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegistroAsistencia'
+    RegistroHistorialAsistencia:
+      type: object
+      required: [fecha, estado, grupoId]
+      properties:
+        fecha:
+          type: string
+          format: date
+        estado:
+          type: string
+          enum: [Presente, Ausente, Retardo, Justificada]
+        grupoId:
+          type: string
