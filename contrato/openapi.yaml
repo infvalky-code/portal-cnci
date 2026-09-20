@@ -93,6 +93,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /periodos/{id}/cerrar:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Cierra el
+        periodo (estatus = Cerrado). Paso previo obligatorio antes de poder
+        darlo de baja.
+      operationId: cerrarPeriodo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Periodo cerrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Periodo'
+        '409':
+          description: El periodo ya está cerrado, mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /periodos/{id}/baja:
     patch:
       summary: >
@@ -1108,6 +1133,43 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /cierre-tetramestre:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. No incluye acuse de
+        enterado ni segunda/tercera oportunidad: no hay campos ni flujo
+        definidos todavía para eso en el proyecto.
+      operationId: obtenerCierreTetramestre
+      parameters:
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Fechas de cierre capturadas (vacías si no se ha llenado)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CierreTetramestre'
+    post:
+      summary: PROPUESTA de Valky, pendiente de acordar con Carlitos. Guarda las fechas de cierre.
+      operationId: guardarCierreTetramestre
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CierreTetramestre'
+      responses:
+        '200':
+          description: Fechas guardadas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CierreTetramestre'
 components:
   schemas:
     LoginRequest:
@@ -1688,3 +1750,21 @@ components:
             nullable: true
           minItems: 4
           maxItems: 4
+    CierreTetramestre:
+      type: object
+      required: [periodoId]
+      properties:
+        periodoId:
+          type: string
+        fechaFirmaActa:
+          type: string
+          format: date
+          nullable: true
+        fechaExtraordinario:
+          type: string
+          format: date
+          nullable: true
+        fechaTerceraOportunidad:
+          type: string
+          format: date
+          nullable: true

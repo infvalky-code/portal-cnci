@@ -77,6 +77,19 @@ async function crearPeriodoFalso(datos) {
   return nuevo
 }
 
+async function cerrarPeriodoFalso(id) {
+  await esperar(300)
+  const periodo = periodosFalsos.find((p) => p.id === id)
+  if (!periodo) {
+    throw new Error('El periodo no existe')
+  }
+  if (periodo.estatus === 'Cerrado') {
+    throw new Error('El periodo ya está cerrado')
+  }
+  periodo.estatus = 'Cerrado'
+  return periodo
+}
+
 async function darDeBajaPeriodoFalso(id) {
   await esperar(300)
   const periodo = periodosFalsos.find((p) => p.id === id)
@@ -113,6 +126,18 @@ export async function crearPeriodo(datos) {
   }
   try {
     const respuesta = await httpClient.post('/periodos', datos)
+    return respuesta.data
+  } catch (error) {
+    manejarError(error)
+  }
+}
+
+export async function cerrarPeriodo(id) {
+  if (usaDatosFalsos) {
+    return cerrarPeriodoFalso(id)
+  }
+  try {
+    const respuesta = await httpClient.patch(`/periodos/${id}/cerrar`)
     return respuesta.data
   } catch (error) {
     manejarError(error)
