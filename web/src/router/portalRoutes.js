@@ -8,6 +8,7 @@ import GroupsView from '@/views/GroupsView.vue'
 import StudentsView from '@/views/StudentsView.vue'
 import TeachersView from '@/views/TeachersView.vue'
 import AttendanceView from '@/views/AttendanceView.vue'
+import AvailabilityView from '@/views/AvailabilityView.vue'
 
 // Cada pantalla real dentro del layout con sesión agrega meta.roles (quién la
 // ve en el menú y quién puede entrar) y, si aparece en el menú lateral,
@@ -84,6 +85,14 @@ export const rutasDelPortal = [
     meta: {
       roles: ['Docente'],
       menu: { titulo: 'Pase de lista' }
+    }
+  },
+  {
+    path: 'disponibilidad',
+    component: AvailabilityView,
+    meta: {
+      roles: ['Docente'],
+      menu: { titulo: 'Disponibilidad' }
     }
   }
 ]

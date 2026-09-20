@@ -739,6 +739,55 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegistroHistorialAsistencia'
+  /disponibilidad:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. En la base real,
+        disponibilidad_docente necesita distinguir nivel y turno, no solo
+        turno (pendiente ya documentado, propuesta .sql sin resolver).
+      operationId: obtenerDisponibilidad
+      parameters:
+        - name: docenteId
+          in: query
+          required: true
+          schema: { type: string }
+        - name: periodoId
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Disponibilidad capturada (vacía si el docente no ha respondido)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disponibilidad'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Guarda o
+        reemplaza la disponibilidad del docente para ese periodo.
+      operationId: guardarDisponibilidad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Disponibilidad'
+      responses:
+        '200':
+          description: Disponibilidad guardada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Disponibilidad'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -1140,3 +1189,43 @@ components:
           enum: [Presente, Ausente, Retardo, Justificada]
         grupoId:
           type: string
+    BloqueDisponibilidad:
+      type: object
+      required: [turnoId, dia, disponible]
+      properties:
+        turnoId:
+          type: string
+        dia:
+          type: string
+          enum: [Lunes, Martes, Miércoles, Jueves, Viernes, Sábado]
+        disponible:
+          type: boolean
+        horaEntrada:
+          type: string
+          description: Formato HH:mm, presente solo si disponible = true
+        horaSalida:
+          type: string
+          description: Formato HH:mm, presente solo si disponible = true
+    Disponibilidad:
+      type: object
+      required: [docenteId, periodoId, niveles, bloques, materiaIds]
+      properties:
+        docenteId:
+          type: string
+        periodoId:
+          type: string
+        especialidadTitulo:
+          type: string
+        niveles:
+          type: array
+          items:
+            type: string
+            enum: [Licenciatura, Bachillerato]
+        bloques:
+          type: array
+          items:
+            $ref: '#/components/schemas/BloqueDisponibilidad'
+        materiaIds:
+          type: array
+          items:
+            type: string
