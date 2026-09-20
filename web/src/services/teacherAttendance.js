@@ -1,5 +1,6 @@
 import httpClient, { usaDatosFalsos } from './httpClient'
 import { obtenerDisponibilidad } from './availability'
+import { listarDocentes } from './teachers'
 import { TOLERANCIA_RETARDO_MINUTOS } from '@/config/attendanceConfig'
 
 // Datos falsos en memoria, con la forma exacta de contrato/openapi.yaml.
@@ -63,10 +64,18 @@ async function clasificar(checada) {
 async function listarAsistenciaDocentesFalso({ periodoId, docenteId, fecha }) {
   await esperar(300)
 
-  let docentesEnAlcance = docenteId ? [docenteId] : [...new Set(checadasFalsas.map((c) => c.docenteId))]
-
   if (fecha) {
     const dia = diaDeFecha(fecha)
+    let docentesEnAlcance
+    if (docenteId) {
+      docentesEnAlcance = [docenteId]
+    } else {
+      // Todos los docentes activos, no solo quienes ya tienen alguna checada
+      // histórica; si no, un docente que nunca ha checado nunca aparecería
+      // como falta.
+      const respuesta = await listarDocentes({ pagina: 1, tamanoPagina: 200 })
+      docentesEnAlcance = respuesta.datos.map((d) => d.id)
+    }
     const resultado = []
     for (const id of docentesEnAlcance) {
       const checada = checadasFalsas.find(

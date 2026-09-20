@@ -1,4 +1,4 @@
-import PlaceholderView from '@/views/PlaceholderView.vue'
+import DashboardView from '@/views/DashboardView.vue'
 import PeriodsView from '@/views/PeriodsView.vue'
 import CareersView from '@/views/CareersView.vue'
 import ShiftsView from '@/views/ShiftsView.vue'
@@ -19,7 +19,7 @@ import PeriodClosingView from '@/views/PeriodClosingView.vue'
 // ve en el menú y quién puede entrar) y, si aparece en el menú lateral,
 // meta.menu.titulo. AppLayout.vue lee esta misma lista para armar el menú.
 export const rutasDelPortal = [
-  { path: '', component: PlaceholderView, meta: { roles: ['Administrador', 'Docente', 'Control escolar'] } },
+  { path: '', component: DashboardView, meta: { roles: ['Administrador', 'Docente', 'Control escolar'] } },
   {
     path: 'catalogos/periodos',
     component: PeriodsView,
