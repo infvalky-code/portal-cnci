@@ -117,6 +117,88 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /carreras:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarCarreras
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: nivel
+          in: query
+          schema: { type: string, enum: [Licenciatura, Bachillerato] }
+        - name: texto
+          in: query
+          description: Búsqueda por nombre o clave de la carrera
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de carreras
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CarreraPagina'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de una
+        carrera.
+      operationId: crearCarrera
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarreraRequest'
+      responses:
+        '201':
+          description: Carrera creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrera'
+        '409':
+          description: Conflicto (duplicado o regla incumplida) devuelto por la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Datos inválidos según la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /carreras/{id}/baja:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Da de baja la
+        carrera (activo = false). No existe eliminación física.
+      operationId: darDeBajaCarrera
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Carrera dada de baja
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Carrera'
+        '409':
+          description: No se puede dar de baja (catálogo en uso), mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -187,6 +269,46 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Periodo'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    Carrera:
+      type: object
+      required: [id, nombre, clave, nivel, activo]
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+        clave:
+          type: string
+        nivel:
+          type: string
+          enum: [Licenciatura, Bachillerato]
+        activo:
+          type: boolean
+    CarreraRequest:
+      type: object
+      required: [nombre, clave, nivel]
+      properties:
+        nombre:
+          type: string
+        clave:
+          type: string
+        nivel:
+          type: string
+          enum: [Licenciatura, Bachillerato]
+    CarreraPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Carrera'
         total:
           type: integer
         pagina:
