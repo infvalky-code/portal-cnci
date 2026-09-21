@@ -98,7 +98,7 @@ async function darDeBaja(materia) {
     <h1 class="text-h5 mb-4">Materias</h1>
 
     <v-row class="align-center" dense>
-      <v-col cols="12" sm="4">
+      <v-col cols="12" sm="3">
         <v-select
           v-model="filtroCarreraId"
           label="Carrera"
@@ -108,18 +108,18 @@ async function darDeBaja(materia) {
           :items="carreras"
         />
       </v-col>
-      <v-col cols="12" sm="4">
+      <v-col cols="12" sm="3">
         <v-text-field v-model="filtroTexto" label="Buscar por nombre o clave" />
       </v-col>
       <v-col cols="12" sm="2">
         <v-btn color="primary" variant="outlined" block @click="consultar(1)">Consultar</v-btn>
       </v-col>
-      <v-col cols="12" sm="1" class="text-sm-right">
+      <v-col cols="12" sm="2">
         <v-btn color="primary" variant="outlined" block @click="router.push('/catalogos/materias/importar')">
           Importar
         </v-btn>
       </v-col>
-      <v-col cols="12" sm="1" class="text-sm-right">
+      <v-col cols="12" sm="2">
         <v-btn color="primary" block @click="abrirAlta">Nueva materia</v-btn>
       </v-col>
     </v-row>
