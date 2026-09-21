@@ -1,7 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { listarMaterias, crearMateria, darDeBajaMateria } from '@/services/subjects'
 import { listarCarreras } from '@/services/careers'
+
+const router = useRouter()
 
 const TAMANO_PAGINA = 20
 
@@ -111,7 +114,12 @@ async function darDeBaja(materia) {
       <v-col cols="12" sm="2">
         <v-btn color="primary" variant="outlined" block @click="consultar(1)">Consultar</v-btn>
       </v-col>
-      <v-col cols="12" sm="2" class="text-sm-right">
+      <v-col cols="12" sm="1" class="text-sm-right">
+        <v-btn color="primary" variant="outlined" block @click="router.push('/catalogos/materias/importar')">
+          Importar
+        </v-btn>
+      </v-col>
+      <v-col cols="12" sm="1" class="text-sm-right">
         <v-btn color="primary" block @click="abrirAlta">Nueva materia</v-btn>
       </v-col>
     </v-row>

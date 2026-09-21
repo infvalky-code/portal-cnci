@@ -4,6 +4,7 @@ import CareersView from '@/views/CareersView.vue'
 import ShiftsView from '@/views/ShiftsView.vue'
 import ClassroomsView from '@/views/ClassroomsView.vue'
 import SubjectsView from '@/views/SubjectsView.vue'
+import CurriculumImportView from '@/views/CurriculumImportView.vue'
 import GroupsView from '@/views/GroupsView.vue'
 import StudentsView from '@/views/StudentsView.vue'
 import TeachersView from '@/views/TeachersView.vue'
@@ -61,6 +62,13 @@ export const rutasDelPortal = [
     meta: {
       roles: ['Administrador', 'Control escolar'],
       menu: { titulo: 'Materias' }
+    }
+  },
+  {
+    path: 'catalogos/materias/importar',
+    component: CurriculumImportView,
+    meta: {
+      roles: ['Administrador', 'Control escolar']
     }
   },
   {
