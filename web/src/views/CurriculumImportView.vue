@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { listarCarreras } from '@/services/careers'
 import { listarMaterias, crearMateria } from '@/services/subjects'
 import { leerHojaDeArchivo } from '@/services/exportHelpers'
+import { evaluarFilasImportacion } from '@/utils/curriculumImportValidation'
 
 const router = useRouter()
 
@@ -21,22 +22,6 @@ const mensajeErrorLectura = ref('')
 const filas = ref([])
 const seLeyoArchivo = ref(false)
 
-function evaluarFilas(clavesExistentes) {
-  const vistasEnArchivo = new Set()
-  return filas.value.map((fila) => {
-    let estado = 'Válida'
-    if (!fila.clave || !fila.nombre) {
-      estado = 'Faltan datos'
-    } else if (clavesExistentes.has(fila.clave.toLowerCase())) {
-      estado = 'Clave duplicada en catálogo'
-    } else if (vistasEnArchivo.has(fila.clave.toLowerCase())) {
-      estado = 'Clave repetida en el archivo'
-    }
-    vistasEnArchivo.add(fila.clave.toLowerCase())
-    return { ...fila, estado, incluir: estado === 'Válida' }
-  })
-}
-
 async function leerArchivo() {
   if (!archivo.value || !carreraId.value) return
   leyendo.value = true
@@ -50,8 +35,7 @@ async function leerArchivo() {
       carreraId: carreraId.value
     })
     const clavesExistentes = new Set(materiasExistentes.datos.map((m) => m.clave.toLowerCase()))
-    filas.value = leidas
-    filas.value = evaluarFilas(clavesExistentes)
+    filas.value = evaluarFilasImportacion(leidas, clavesExistentes)
     seLeyoArchivo.value = true
   } catch (error) {
     mensajeErrorLectura.value = error.message

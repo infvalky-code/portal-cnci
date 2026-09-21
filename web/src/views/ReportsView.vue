@@ -10,6 +10,7 @@ import { obtenerAsistenciaGrupo, obtenerHistorialAsistenciaAlumno } from '@/serv
 import { listarHorarios } from '@/services/schedules'
 import { PONDERACION_POR_NIVEL, CALIFICACION_MINIMA_APROBATORIA } from '@/config/gradingConfig'
 import { exportarExcel, imprimir } from '@/services/exportHelpers'
+import { calcularCalificacionFinal, calcularIndiceReprobacion } from '@/utils/gradingCalculations'
 
 const FORMATOS = [
   { valor: 'lista-mensual', titulo: 'Lista de alumnos mensual' },
@@ -161,8 +162,7 @@ async function consultarActaBachillerato() {
     ])
   ]
 
-  let reprobadosParcial = 0
-  let capturados = 0
+  const capturadas = []
 
   filas.value = []
   for (const alumno of respuestaAlumnos.datos) {
@@ -178,13 +178,12 @@ async function consultarActaBachillerato() {
       fila[`cal-${materia.id}`] = calificacion ?? ''
       fila[`faltas-${materia.id}`] = faltasTotales
       if (calificacion !== null) {
-        capturados++
-        if (calificacion < CALIFICACION_MINIMA_APROBATORIA) reprobadosParcial++
+        capturadas.push(calificacion)
       }
     }
     filas.value.push(fila)
   }
-  indiceReprobacion.value = capturados > 0 ? (reprobadosParcial / capturados) * 100 : null
+  indiceReprobacion.value = calcularIndiceReprobacion(capturadas, CALIFICACION_MINIMA_APROBATORIA)
 }
 
 async function consultarBoleta() {
@@ -217,10 +216,8 @@ async function consultarBoleta() {
     const calificaciones = await listarCalificaciones(alumno.grupoId, materia.id)
     const registro = calificaciones.find((c) => c.alumnoId === alumno.id)
     const parciales = registro?.parciales ?? [null, null, null, null]
-    const completo = parciales.every((p) => p !== null && p !== undefined)
-    const final = completo
-      ? parciales.reduce((s, p, i) => s + (p * ponderacion[i]) / 100, 0).toFixed(1)
-      : ''
+    const calificacionFinal = calcularCalificacionFinal(parciales, ponderacion)
+    const final = calificacionFinal !== null ? calificacionFinal.toFixed(1) : ''
     filas.value.push({
       materia: materia.nombre,
       p1: parciales[0] ?? '',
@@ -263,10 +260,7 @@ async function consultarActaLicenciatura() {
       ).length
       const registro = calificaciones.find((c) => c.alumnoId === alumno.id)
       const parciales = registro?.parciales ?? [null, null, null, null]
-      const completo = parciales.every((p) => p !== null && p !== undefined)
-      const final = completo
-        ? parciales.reduce((s, p, i) => s + (p * ponderacion[i]) / 100, 0)
-        : null
+      const final = calcularCalificacionFinal(parciales, ponderacion)
       filas.value.push({
         matricula: alumno.matricula,
         nombre: alumno.nombre,

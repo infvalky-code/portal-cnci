@@ -9,6 +9,7 @@ import { listarPeriodos } from '@/services/periods'
 import { listarHorarios } from '@/services/schedules'
 import { obtenerHistorialAsistenciaAlumno } from '@/services/attendance'
 import { PONDERACION_POR_NIVEL, CALIFICACION_MINIMA_APROBATORIA } from '@/config/gradingConfig'
+import { calcularCalificacionFinal } from '@/utils/gradingCalculations'
 
 const periodosAbiertos = ref([])
 const grupos = ref([])
@@ -93,8 +94,7 @@ async function consultar() {
 }
 
 function final(fila) {
-  if (fila.parciales.some((p) => p === null || p === undefined)) return null
-  return fila.parciales.reduce((suma, p, i) => suma + (p * ponderacion.value[i]) / 100, 0)
+  return calcularCalificacionFinal(fila.parciales, ponderacion.value)
 }
 
 const guardando = ref(false)

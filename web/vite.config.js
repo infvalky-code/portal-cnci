@@ -12,5 +12,8 @@ export default defineConfig({
   },
   server: {
     port: 5300
+  },
+  test: {
+    environment: 'node'
   }
 })
