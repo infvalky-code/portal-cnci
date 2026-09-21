@@ -1170,6 +1170,123 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CierreTetramestre'
+  /proyectos-finales:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central.
+      operationId: listarProyectosFinales
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: periodoId
+          in: query
+          schema: { type: string }
+        - name: carreraId
+          in: query
+          schema: { type: string }
+        - name: docenteId
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Página de proyectos finales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProyectoFinalPagina'
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Alta de un
+        proyecto final por parte del docente asesor.
+      operationId: crearProyectoFinal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProyectoFinalRequest'
+      responses:
+        '201':
+          description: Proyecto final creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProyectoFinal'
+        '422':
+          description: Datos inválidos, mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /proyectos-finales/{id}:
+    patch:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Edición de los
+        datos generales del proyecto (título, alumnos participantes).
+      operationId: editarProyectoFinal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProyectoFinalRequest'
+      responses:
+        '200':
+          description: Proyecto final actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProyectoFinal'
+  /proyectos-finales/{id}/visto-bueno:
+    post:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. Control escolar
+        aprueba o regresa el proyecto. No es un borrado, solo cambia el
+        estatus y deja el comentario de Coordinación.
+      operationId: darVistoBuenoProyectoFinal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [estatus]
+              properties:
+                estatus:
+                  type: string
+                  enum: [Aprobado, Regresado]
+                comentarioCoordinacion:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: Proyecto final con el visto bueno registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProyectoFinal'
+        '422':
+          description: Estatus inválido, mensaje de la base
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 components:
   schemas:
     LoginRequest:
@@ -1768,3 +1885,60 @@ components:
           type: string
           format: date
           nullable: true
+    ProyectoFinal:
+      type: object
+      required: [id, periodoId, carreraId, titulo, docenteId, alumnosParticipantes, estatus]
+      properties:
+        id:
+          type: string
+        periodoId:
+          type: string
+        carreraId:
+          type: string
+        titulo:
+          type: string
+        docenteId:
+          type: string
+        alumnosParticipantes:
+          type: string
+          description: >
+            Texto libre con los alumnos participantes (los alumnos no tienen
+            cuenta ni registro individual de proyecto en el portal).
+        estatus:
+          type: string
+          enum: [Pendiente, Aprobado, Regresado]
+        comentarioCoordinacion:
+          type: string
+          nullable: true
+        fechaVistoBueno:
+          type: string
+          format: date
+          nullable: true
+    ProyectoFinalRequest:
+      type: object
+      required: [periodoId, carreraId, titulo, docenteId, alumnosParticipantes]
+      properties:
+        periodoId:
+          type: string
+        carreraId:
+          type: string
+        titulo:
+          type: string
+        docenteId:
+          type: string
+        alumnosParticipantes:
+          type: string
+    ProyectoFinalPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProyectoFinal'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer

@@ -15,6 +15,7 @@ import DevicesView from '@/views/DevicesView.vue'
 import GradesView from '@/views/GradesView.vue'
 import PeriodClosingView from '@/views/PeriodClosingView.vue'
 import ReportsView from '@/views/ReportsView.vue'
+import FinalProjectsView from '@/views/FinalProjectsView.vue'
 
 // Cada pantalla real dentro del layout con sesión agrega meta.roles (quién la
 // ve en el menú y quién puede entrar) y, si aparece en el menú lateral,
@@ -147,6 +148,14 @@ export const rutasDelPortal = [
     meta: {
       roles: ['Administrador', 'Control escolar', 'Docente'],
       menu: { titulo: 'Reportes' }
+    }
+  },
+  {
+    path: 'proyectos-finales',
+    component: FinalProjectsView,
+    meta: {
+      roles: ['Docente', 'Control escolar'],
+      menu: { titulo: 'Proyectos finales' }
     }
   }
 ]
