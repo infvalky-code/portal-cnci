@@ -1287,6 +1287,41 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /auditoria:
+    get:
+      summary: >
+        PROPUESTA de Valky, pendiente de acordar con Carlitos. El portal la usa
+        con datos falsos mientras tanto (VITE_USE_FAKE_DATA=true); no hay
+        implementación real todavía en la API central. Es de solo lectura: la
+        bitácora la genera la propia API central en cada operación, nadie la
+        captura a mano desde el portal.
+      operationId: listarAuditoria
+      parameters:
+        - name: pagina
+          in: query
+          schema: { type: integer, minimum: 1, default: 1 }
+        - name: tamanoPagina
+          in: query
+          schema: { type: integer, default: 20 }
+        - name: entidad
+          in: query
+          schema: { type: string }
+        - name: usuarioId
+          in: query
+          schema: { type: string }
+        - name: fechaInicio
+          in: query
+          schema: { type: string, format: date }
+        - name: fechaFin
+          in: query
+          schema: { type: string, format: date }
+      responses:
+        '200':
+          description: Página de registros de auditoría
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistroAuditoriaPagina'
 components:
   schemas:
     LoginRequest:
@@ -1936,6 +1971,44 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProyectoFinal'
+        total:
+          type: integer
+        pagina:
+          type: integer
+        tamanoPagina:
+          type: integer
+    RegistroAuditoria:
+      type: object
+      required: [id, fecha, usuarioNombre, usuarioRol, entidad, entidadId, accion, descripcion]
+      properties:
+        id:
+          type: string
+        fecha:
+          type: string
+          format: date-time
+        usuarioNombre:
+          type: string
+        usuarioRol:
+          type: string
+          enum: [Administrador, Docente, Control escolar]
+        entidad:
+          type: string
+          description: Nombre del catálogo o proceso afectado (Periodo, Carrera, Grupo, ProyectoFinal, etc.)
+        entidadId:
+          type: string
+        accion:
+          type: string
+          enum: [Alta, Edición, Baja, Publicación, VistoBueno, Cierre]
+        descripcion:
+          type: string
+    RegistroAuditoriaPagina:
+      type: object
+      required: [datos, total, pagina, tamanoPagina]
+      properties:
+        datos:
+          type: array
+          items:
+            $ref: '#/components/schemas/RegistroAuditoria'
         total:
           type: integer
         pagina:
