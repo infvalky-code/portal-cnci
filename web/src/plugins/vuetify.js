@@ -15,7 +15,11 @@ const cnciLightTheme = {
     background: '#F5F5F5',
     surface: '#FFFFFF',
     'on-background': '#333333',
-    'on-surface': '#333333'
+    'on-surface': '#333333',
+    // #B8860B es un dorado medio: con texto blanco encima da ~3.3:1 de
+    // contraste (no pasa WCAG AA 4.5:1). Con texto negro da ~6.5:1. Se fija
+    // aquí, no se toca el color de marca.
+    'on-warning': '#000000'
   }
 }
 

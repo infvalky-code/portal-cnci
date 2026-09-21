@@ -40,7 +40,7 @@ function cerrarSesion() {
 
       <v-divider />
 
-      <v-list v-if="opcionesMenu.length" nav>
+      <v-list v-if="opcionesMenu.length" nav color="primary">
         <v-list-item
           v-for="opcion in opcionesMenu"
           :key="opcion.ruta"
@@ -53,14 +53,30 @@ function cerrarSesion() {
       </p>
 
       <template #append>
+        <v-divider />
         <v-list nav>
-          <v-list-item title="Cerrar sesión" @click="cerrarSesion" />
+          <v-list-item title="Cerrar sesión" class="text-error font-weight-medium" @click="cerrarSesion" />
         </v-list>
       </template>
     </v-navigation-drawer>
 
     <v-main class="bg-background">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </router-view>
     </v-main>
   </v-app>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

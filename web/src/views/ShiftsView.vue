@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { listarTurnos, crearTurno, darDeBajaTurno } from '@/services/shifts'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -61,6 +62,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(turno) {
   dandoDeBajaId.value = turno.id
@@ -73,6 +75,12 @@ async function darDeBaja(turno) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const turno = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(turno)
 }
 </script>
 
@@ -124,7 +132,7 @@ async function darDeBaja(turno) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === turno.id"
-                  @click="darDeBaja(turno)"
+                  @click="confirmandoBaja = turno"
                 >
                   Dar de baja
                 </v-btn>
@@ -158,5 +166,14 @@ async function darDeBaja(turno) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja el turno ${confirmandoBaja?.nombre}? Podrás seguir consultándolo pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

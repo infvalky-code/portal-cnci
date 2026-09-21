@@ -4,6 +4,7 @@ import { listarGrupos, crearGrupo, darDeBajaGrupo } from '@/services/groups'
 import { listarPeriodos } from '@/services/periods'
 import { listarCarreras } from '@/services/careers'
 import { listarTurnos } from '@/services/shifts'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -93,6 +94,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(grupo) {
   dandoDeBajaId.value = grupo.id
@@ -105,6 +107,12 @@ async function darDeBaja(grupo) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const grupo = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(grupo)
 }
 </script>
 
@@ -133,13 +141,13 @@ async function darDeBaja(grupo) {
           :items="carreras"
         />
       </v-col>
-      <v-col cols="12" sm="3">
+      <v-col cols="12" sm="2">
         <v-text-field v-model="filtroTexto" label="Buscar por nombre" />
       </v-col>
-      <v-col cols="12" sm="1">
+      <v-col cols="12" sm="2">
         <v-btn color="primary" variant="outlined" block @click="consultar(1)">Consultar</v-btn>
       </v-col>
-      <v-col cols="12" sm="2" class="text-sm-right">
+      <v-col cols="12" sm="2">
         <v-btn color="primary" block @click="abrirAlta">Nuevo grupo</v-btn>
       </v-col>
     </v-row>
@@ -184,7 +192,7 @@ async function darDeBaja(grupo) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === grupo.id"
-                  @click="darDeBaja(grupo)"
+                  @click="confirmandoBaja = grupo"
                 >
                   Dar de baja
                 </v-btn>
@@ -240,5 +248,14 @@ async function darDeBaja(grupo) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja el grupo ${confirmandoBaja?.nombre}? Podrás seguir consultándolo pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

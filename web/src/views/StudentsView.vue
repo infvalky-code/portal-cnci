@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { listarAlumnos, crearAlumno, darDeBajaAlumno } from '@/services/students'
 import { listarCarreras } from '@/services/careers'
 import { listarGrupos } from '@/services/groups'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -104,6 +105,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(alumno) {
   dandoDeBajaId.value = alumno.id
@@ -116,6 +118,12 @@ async function darDeBaja(alumno) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const alumno = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(alumno)
 }
 </script>
 
@@ -193,7 +201,7 @@ async function darDeBaja(alumno) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === alumno.id"
-                  @click="darDeBaja(alumno)"
+                  @click="confirmandoBaja = alumno"
                 >
                   Dar de baja
                 </v-btn>
@@ -258,5 +266,14 @@ async function darDeBaja(alumno) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja al alumno ${confirmandoBaja?.nombre}? Podrás seguir consultándolo pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

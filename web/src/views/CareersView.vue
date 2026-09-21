@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { listarCarreras, crearCarrera, darDeBajaCarrera } from '@/services/careers'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -63,6 +64,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(carrera) {
   dandoDeBajaId.value = carrera.id
@@ -75,6 +77,12 @@ async function darDeBaja(carrera) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const carrera = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(carrera)
 }
 </script>
 
@@ -138,7 +146,7 @@ async function darDeBaja(carrera) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === carrera.id"
-                  @click="darDeBaja(carrera)"
+                  @click="confirmandoBaja = carrera"
                 >
                   Dar de baja
                 </v-btn>
@@ -178,5 +186,14 @@ async function darDeBaja(carrera) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja la carrera ${confirmandoBaja?.nombre}? Podrás seguir consultándola pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

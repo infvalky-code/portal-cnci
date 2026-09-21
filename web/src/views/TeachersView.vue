@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { listarDocentes, crearDocente, darDeBajaDocente } from '@/services/teachers'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -63,6 +64,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(docente) {
   dandoDeBajaId.value = docente.id
@@ -75,6 +77,12 @@ async function darDeBaja(docente) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const docente = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(docente)
 }
 </script>
 
@@ -147,7 +155,7 @@ async function darDeBaja(docente) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === docente.id"
-                  @click="darDeBaja(docente)"
+                  @click="confirmandoBaja = docente"
                 >
                   Dar de baja
                 </v-btn>
@@ -187,5 +195,14 @@ async function darDeBaja(docente) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja al docente ${confirmandoBaja?.nombre}? Podrás seguir consultándolo pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

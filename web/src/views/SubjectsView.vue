@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { listarMaterias, crearMateria, darDeBajaMateria } from '@/services/subjects'
 import { listarCarreras } from '@/services/careers'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const router = useRouter()
 
@@ -78,6 +79,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(materia) {
   dandoDeBajaId.value = materia.id
@@ -90,6 +92,12 @@ async function darDeBaja(materia) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const materia = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(materia)
 }
 </script>
 
@@ -160,7 +168,7 @@ async function darDeBaja(materia) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === materia.id"
-                  @click="darDeBaja(materia)"
+                  @click="confirmandoBaja = materia"
                 >
                   Dar de baja
                 </v-btn>
@@ -202,5 +210,14 @@ async function darDeBaja(materia) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja la materia ${confirmandoBaja?.nombre}? Podrás seguir consultándola pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

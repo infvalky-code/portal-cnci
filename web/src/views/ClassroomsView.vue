@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { listarAulas, crearAula, darDeBajaAula } from '@/services/classrooms'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -61,6 +62,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(aula) {
   dandoDeBajaId.value = aula.id
@@ -73,6 +75,12 @@ async function darDeBaja(aula) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const aula = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(aula)
 }
 </script>
 
@@ -126,7 +134,7 @@ async function darDeBaja(aula) {
                   variant="text"
                   color="error"
                   :loading="dandoDeBajaId === aula.id"
-                  @click="darDeBaja(aula)"
+                  @click="confirmandoBaja = aula"
                 >
                   Dar de baja
                 </v-btn>
@@ -161,5 +169,14 @@ async function darDeBaja(aula) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja el aula ${confirmandoBaja?.clave}? Podrás seguir consultándola pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>

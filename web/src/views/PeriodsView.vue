@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { listarPeriodos, crearPeriodo, darDeBajaPeriodo } from '@/services/periods'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 
 const TAMANO_PAGINA = 20
 
@@ -63,6 +64,7 @@ async function guardarAlta() {
 }
 
 const dandoDeBajaId = ref(null)
+const confirmandoBaja = ref(null)
 
 async function darDeBaja(periodo) {
   dandoDeBajaId.value = periodo.id
@@ -75,6 +77,12 @@ async function darDeBaja(periodo) {
   } finally {
     dandoDeBajaId.value = null
   }
+}
+
+async function confirmarBaja() {
+  const periodo = confirmandoBaja.value
+  confirmandoBaja.value = null
+  await darDeBaja(periodo)
 }
 </script>
 
@@ -145,7 +153,7 @@ async function darDeBaja(periodo) {
                   color="error"
                   :disabled="periodo.estatus === 'Abierto'"
                   :loading="dandoDeBajaId === periodo.id"
-                  @click="darDeBaja(periodo)"
+                  @click="confirmandoBaja = periodo"
                 >
                   Dar de baja
                 </v-btn>
@@ -181,5 +189,14 @@ async function darDeBaja(periodo) {
         </v-form>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      :model-value="confirmandoBaja !== null"
+      title="Dar de baja"
+      :message="`¿Dar de baja el periodo ${confirmandoBaja?.nombre}? Podrás seguir consultándolo pero no aparecerá en las listas activas.`"
+      :loading="dandoDeBajaId === confirmandoBaja?.id"
+      @update:model-value="confirmandoBaja = null"
+      @confirm="confirmarBaja"
+    />
   </v-container>
 </template>
